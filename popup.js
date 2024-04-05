@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   saveButton.addEventListener('click', () => {
       // Zapisywanie ustawień po kliknięciu przycisku "Zapisz"
-      chrome.storage.sync.get(['enabled'], (data) => {
+      chrome.storage.sync.get(['enabled', 'tagetTime', 'gmt'], (data) => {
           chrome.storage.sync.set({
               targetTime: timeInput.value,
               enabled: data.enabled, // Zachowujemy wartość enabled

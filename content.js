@@ -1,6 +1,6 @@
 let targetTime = '12:00:00'; // Domyślny czas, powinien być nadpisany przez ustawienia z popup
 let enabled = false; // Domyślnie wyłączony
-let gmt = checkGmt();
+let localGmt = checkGmt();
 let plemionaGmt = 2;
 
 console.log("Widget is enabled")
@@ -13,7 +13,7 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
-chrome.storage.sync.get(['enabled', 'targetTime'], (data) => {
+chrome.storage.sync.get(['enabled', 'targetTime', 'gmt'], (data) => {
     if (data.enabled !== undefined) {
       enabled = data.enabled;
     }
@@ -31,7 +31,10 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
   for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
     if (key === 'targetTime') {
       targetTime = newValue;
-    } else if (key === 'enabled') {
+    } else if(key === 'gmt'){
+      plemionaGmt = newValue;
+    }
+     else if (key === 'enabled') {
       enabled = newValue;
       if(newValue == true){
         console.log("Clicker is activated!")
@@ -65,8 +68,8 @@ Date.prototype.addHours = function(h){
 function calculateDocelowaGodzina(czasTrwania) {
     const [godziny, minuty, sekundy] = czasTrwania.split(':').map(Number);
     const teraz = new Date();
-    if(gmt !== plemionaGmt){
-      teraz.addHours(gmt - plemionaGmt);
+    if(localGmt !== plemionaGmt){
+      teraz.addHours(localGmt - plemionaGmt);
     }
     
     const durationInMs = ((godziny * 60 + minuty) * 60 + sekundy) * 1000;
@@ -112,8 +115,8 @@ function testAttack(){
   console.log("rozpoczynam test")
   //TEST Czasu aktywacji z widget popup
   var teraz = new Date();
-  if(gmt !== plemionaGmt){
-    teraz.addHours(gmt - plemionaGmt);
+  if(localGmt !== plemionaGmt){
+    teraz.addHours(localGmt - plemionaGmt);
   }
   console.log(`Godzina w plemionach to: ${teraz} `);
 
@@ -125,7 +128,11 @@ function testAttack(){
   }
   
   if(plemionaGmt){
-    console.log(`plemiona w widget GMT ustawione na ${plemionaGmt}`);
+    console.log(`GMT w popup to ${plemionaGmt}`);
+  }
+
+  if(localGmt){
+    console.log(`twój gmt to ${localGmt}`);
   }
     //Test z czytaniem Trwanie: 
   const durationElement = getCzasTrwania();
@@ -152,8 +159,8 @@ function testAttack(){
     const targetDateTime = new Date(docelowaGodzina.getTime()); // Skopiowanie daty
 
     targetDateTime.setHours(targetTimeParts[0], targetTimeParts[1], targetTimeParts[2], 0);
-    if(gmt !== plemionaGmt){
-      targetDateTime.addHours(gmt - plemionaGmt);
+    if(localGmt !== plemionaGmt){
+      targetDateTime.addHours(plemionaGmt - localGmt);
     }
     let docelowaHours = docelowaGodzina.getHours();
     let docelowaMinutes = docelowaGodzina.getMinutes();
