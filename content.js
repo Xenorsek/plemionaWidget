@@ -213,7 +213,7 @@ function checkTimeAndTriggerAction() {
           console.log("wejdź na mapę i zaplanuj atak");
         }
     }
-  }, 1000); // Sprawdzaj co sekundę
+  }, 300); // Sprawdzaj co sekundę
   
 
   
