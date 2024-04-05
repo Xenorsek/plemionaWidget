@@ -170,38 +170,6 @@ function testAttack(){
     }
   }
 }
-
-// Funkcja do obliczenia i porównania czasu przybycia
-function checkTimeAndTriggerAction() {
-    // Znajdź element z czasem trwania (załóżmy, że jest to pierwszy znaleziony pasujący element)
-    const durationElement = getCzasTrwania();
-
-    if (durationElement) {
-        const docelowaGodzina = calculateDocelowaGodzina(durationElement);
-        if (docelowaGodzina) {
-
-        // Sprawdź, czy obliczony czas przybycia zgadza się z czasem docelowym
-        const targetTimeParts = targetTime.split(':').map(part => parseInt(part, 10));
-        const targetDateTime = new Date(docelowaGodzina.getTime()); // Skopiowanie daty
-
-        targetDateTime.setHours(targetTimeParts[0], targetTimeParts[1], targetTimeParts[2], 0);
-            if (docelowaGodzina >= targetDateTime) {
-                const button = document.querySelector('#troop_confirm_submit'); 
-                if (button) {
-                console.log("Attack!!!1")
-                button.click();
-                }
-        }
-      }
-      else{
-        console.log("problem z docelowa godzina w kodzie");
-      }
-    }
-    else{
-      console.log("nie ma elementu z Trwanie:")
-    }
-  }
-  
   // Regularne sprawdzanie, czy nadszedł czas na akcję
   setInterval(() => {
     if (enabled) {
