@@ -191,7 +191,45 @@ function testAttack(){
   }, 300); // Sprawdzaj co sekundę
   
 
-  
+// rynek -- przycisk załącz wszystkie zasoby
+if (window.location.href.indexOf("screen=market&mode=send") > -1){
+  console.log("widget in market is active");
+  let resourcesTable = null;
+  var thElements = document.querySelectorAll('th');
+  var targetTh = Array.from(thElements).find(th => th.textContent.trim() === "Surowce");
+
+  if (targetTh) {
+    var parentTd = targetTh.parentElement;
+    while (parentTd && parentTd.tagName !== 'TD') {
+        parentTd = parentTd.parentElement;
+    }
+
+    if (parentTd && parentTd.getAttribute('valign') === "top") {
+        // Znaleziono odpowiedni element <td valign="top">
+        resourcesTable = parentTd;
+    }
+  }
+
+  var insertWoodButton = resourcesTable.querySelector('a.insert[data-res="wood"]');
+  var insertStoneButton = resourcesTable.querySelector('a.insert[data-res="stone"]');
+  var insertIronButton = resourcesTable.querySelector('a.insert[data-res="iron"]');
+
+  var triggerAllResourcesButton = document.createElement('button');
+  triggerAllResourcesButton.id = 'triggerAllResources';
+  triggerAllResourcesButton.textContent = 'Wciśnij wszystkie zasoby';
+  triggerAllResourcesButton.className = 'btn';
+
+  triggerAllResourcesButton.addEventListener('click', function(event) {
+    event.preventDefault();
+    if (insertWoodButton) insertWoodButton.click();
+    if (insertStoneButton) insertStoneButton.click();
+    if (insertIronButton) insertIronButton.click();
+  })
+
+  resourcesTable.appendChild(triggerAllResourcesButton);
+}
+
+//Ratusz - tooltip na brakujące zasoby
 if (window.location.href.indexOf("screen=main") > -1) {
   console.log("widget in main is active");
   function updateToolTips() {
