@@ -111,6 +111,32 @@ function checkTimeAndTriggerActionDiffrentCalculations(){
   }
 }
 
+function checkForBuildIn(plannerTime){
+  const durationElement = getCzasTrwania();
+  if (durationElement) {
+    const docelowaGodzina = calculateDocelowaGodzina(durationElement);
+    const targetTimeParts = plannerTime.split(':').map(part => parseInt(part, 10));
+
+    let docelowaHours = docelowaGodzina.getHours();
+    let docelowaMinutes = docelowaGodzina.getMinutes();
+    let docelowaSeconds = docelowaGodzina.getSeconds();
+    if(docelowaHours == targetTimeParts[0] && docelowaMinutes == targetTimeParts[1] && docelowaSeconds >= targetTimeParts[2] ){
+      const button = document.querySelector('#troop_confirm_submit');
+        if (button) {
+          console.log("Attack!!!1")
+          button.click();
+        }
+        else{
+          console.log("nie moge znaleźć przycisku :(");
+        }
+    }
+  }
+  else{
+    console.log("czas trwania nie jest widoczny")
+  }
+}
+
+
 function testAttack(){
   console.log("rozpoczynam test")
   //TEST Czasu aktywacji z widget popup
@@ -285,4 +311,93 @@ if (window.location.href.indexOf("screen=main") > -1) {
       });
   });
 
+}
+
+//Attack planner
+if(window.location.href.indexOf("screen=map") > -1){
+  let intervalId;
+
+  function startAttackPlanner(activationTime, time){
+    if(!intervalId){
+      console.log("Start!");
+      intervalId = setInterval(() => {
+        console.log("checking...")
+        checkForBuildIn(activationTime);
+      
+      }, time);
+    }
+    let button = document.getElementById("triggerPlanner");
+    button.textContent = "Dezaktywuj";
+  }
+
+  function stopAttackPlanner(){
+    clearInterval(intervalId);
+    intervalId = null;
+    console.log("Stopped");
+
+    let button = document.getElementById("triggerPlanner");
+    button.textContent = "Aktywuj";
+  }
+
+  const addElements = () =>{
+    let form = document.getElementById("command-data-form");
+    let popup =  form.parentElement;
+    const div = document.createElement('div');
+    div.className = "plannerContainer";
+
+    const label = document.createElement('label');
+    label.setAttribute("for", "plannerTime");
+    label.textContent = "Czas aktywacji (HH:MM:SS):";
+
+    const input = document.createElement('input');
+    input.setAttribute("type","time");
+    input.setAttribute("id", "plannerTime");
+    input.setAttribute("step", "1");
+    input.value = "21:37";
+
+    const intervalLabel = document.createElement('label');
+    intervalLabel.setAttribute("for", "intervalData");
+    intervalLabel.textContent = "Cyklicznie sprawdzaj co:";
+
+    const intervalData = document.createElement('input');
+    intervalData.setAttribute("type","number");
+    intervalData.setAttribute("id", "intervalData");
+    intervalData.setAttribute("step", "100");
+    intervalData.value = "200";
+
+    const button = document.createElement('button');
+    button.id = 'triggerPlanner';
+    button.className = 'btn';
+    button.textContent = "Aktywuj";
+    
+
+    button.addEventListener('click', function(event){
+      event.preventDefault();
+
+      if(intervalId){
+        stopAttackPlanner();
+      }
+      else{
+        let intervalTime = document.getElementById("intervalData").value;
+        let plannerTime = document.getElementById("plannerTime").value;
+        startAttackPlanner(plannerTime, intervalTime);
+      }
+    })
+
+    div.appendChild(label);
+    div.appendChild(input);
+    div.appendChild(intervalLabel);
+    div.appendChild(intervalData);
+    div.appendChild(button);
+
+    popup.appendChild(div);
+  }
+
+  const checkForm = setInterval(() =>{
+    const button = document.getElementById("troop_confirm_submit");
+    if(button){
+      clearInterval(checkForm);
+      addElements();
+    }
+  }, 200);
 }
